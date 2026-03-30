@@ -34,6 +34,14 @@
   - Reports API: 月度/季度/年度/仪表盘报表
   - 提交: 5be1af8
 
+- [x] 步骤5: 初始化 Vue 3 前端项目
+  - API 客户端 (axios + interceptors)
+  - Pinia Stores (income, expense, category, account, reports)
+  - Layout 布局组件 + 侧边栏导航
+  - Vue Router 路由配置
+  - 页面占位组件
+  - 提交: d73475e
+
 ## 待办
 - [ ] 步骤2: 初始化项目结构（前后端分离）
 - [ ] 步骤3: 配置 Prisma 数据库模型
