@@ -64,6 +64,13 @@
   - 多工作表 Excel 支持
   - 提交: 0e980c7
 
+- [x] 步骤9: 联调测试和文档
+  - install.sh: 一键安装脚本
+  - generate-test-data.js: 测试数据生成
+  - README.md: 完整项目文档
+  - .gitignore: 项目忽略文件
+  - 提交: 8e6d489
+
 ## 待办
 - [ ] 步骤2: 初始化项目结构（前后端分离）
 - [ ] 步骤3: 配置 Prisma 数据库模型
