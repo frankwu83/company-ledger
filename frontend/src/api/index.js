@@ -11,10 +11,11 @@ const api = axios.create({
 // 请求拦截器
 api.interceptors.request.use(
   (config) => {
-    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`)
+    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, config)
     return config
   },
   (error) => {
+    console.error('[API Request Error]', error)
     return Promise.reject(error)
   }
 )
@@ -22,10 +23,11 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
   (response) => {
+    console.log(`[API Response] ${response.config.url}`, response.data)
     return response.data
   },
   (error) => {
-    console.error('API Error:', error.response?.data || error.message)
+    console.error('[API Response Error]', error.response?.data || error.message)
     return Promise.reject(error)
   }
 )

@@ -145,7 +145,12 @@ const accountStore = useAccountStore()
 const { dashboard } = storeToRefs(reportStore)
 
 onMounted(() => {
-  reportStore.fetchDashboard()
+  console.log('Dashboard mounted, fetching data...')
+  reportStore.fetchDashboard().then(() => {
+    console.log('Dashboard data loaded:', dashboard.value)
+  }).catch(err => {
+    console.error('Failed to load dashboard:', err)
+  })
   categoryStore.fetchCategories()
   accountStore.fetchAccounts()
 })

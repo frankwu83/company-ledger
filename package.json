@@ -13,10 +13,19 @@
     "db:migrate": "cd database && npx prisma migrate dev",
     "db:studio": "cd database && npx prisma studio"
   },
-  "keywords": ["ledger", "accounting", "vue3", "nodejs"],
+  "keywords": [
+    "ledger",
+    "accounting",
+    "vue3",
+    "nodejs"
+  ],
   "author": "Frank",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "prisma": "^5.22.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
   }
 }
