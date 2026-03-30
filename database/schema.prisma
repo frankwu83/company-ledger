@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 分类表
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  type        String    // "income" | "expense"
+  parentId    Int?      @map("parent_id")
+  parent      Category? @relation("CategoryParent", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryParent")
+  incomes     Income[]
+  expenses    Expense[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("categories")
+}
+
+// 账户表
+model Account {
+  id          Int       @id @default(autoincrement())
+  name        String
+  type        String    // "cash" | "bank" | "alipay" | "wechat"
+  balance     Decimal   @default(0) @db.Decimal(10, 2)
+  incomes     Income[]
+  expenses    Expense[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("accounts")
+}
+
+// 收入记录表
+model Income {
+  id          Int       @id @default(autoincrement())
+  date        DateTime
+  amount      Decimal   @db.Decimal(10, 2)
+  categoryId  Int       @map("category_id")
+  category    Category  @relation(fields: [categoryId], references: [id])
+  accountId   Int       @map("account_id")
+  account     Account   @relation(fields: [accountId], references: [id])
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("incomes")
+  @@index([date])
+  @@index([categoryId])
+}
+
+// 支出记录表
+model Expense {
+  id          Int       @id @default(autoincrement())
+  date        DateTime
+  amount      Decimal   @db.Decimal(10, 2)
+  categoryId  Int       @map("category_id")
+  category    Category  @relation(fields: [categoryId], references: [id])
+  accountId   Int       @map("account_id")
+  account     Account   @relation(fields: [accountId], references: [id])
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("expenses")
+  @@index([date])
+  @@index([categoryId])
+}
