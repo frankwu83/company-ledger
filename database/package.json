@@ -1,0 +1,17 @@
+{
+  "name": "company-ledger-database",
+  "version": "1.0.0",
+  "description": "数据库模型和迁移",
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "studio": "prisma studio",
+    "seed": "node seed.js"
+  },
+  "devDependencies": {
+    "prisma": "^5.7.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.0"
+  }
+}

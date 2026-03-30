@@ -1,0 +1,22 @@
+{
+  "name": "company-ledger",
+  "version": "1.0.0",
+  "description": "公司账目记录系统 - 台账收集、整理与报告生成",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "db:generate": "cd database && npx prisma generate",
+    "db:migrate": "cd database && npx prisma migrate dev",
+    "db:studio": "cd database && npx prisma studio"
+  },
+  "keywords": ["ledger", "accounting", "vue3", "nodejs"],
+  "author": "Frank",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
