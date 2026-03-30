@@ -50,7 +50,7 @@
         <h2>{{ $route.meta?.title || '公司台账系统' }}</h2>
       </el-header>
       <el-main class="main">
-        <slot />
+        <router-view />
       </el-main>
     </el-container>
   </el-container>
