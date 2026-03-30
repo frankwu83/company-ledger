@@ -73,4 +73,12 @@ export const reportApi = {
   getDashboard: () => api.get('/reports/dashboard')
 }
 
+// 导出 API
+export const exportApi = {
+  exportIncome: (params) => api.get('/export/income', { params, responseType: 'blob' }),
+  exportExpense: (params) => api.get('/export/expense', { params, responseType: 'blob' }),
+  exportMonthly: (params) => api.get('/export/monthly', { params, responseType: 'blob' }),
+  exportYearly: (params) => api.get('/export/yearly', { params, responseType: 'blob' })
+}
+
 export default api

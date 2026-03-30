@@ -20,6 +20,7 @@ app.use('/api/expense', require('./routes/expense'));
 app.use('/api/categories', require('./routes/category'));
 app.use('/api/accounts', require('./routes/account'));
 app.use('/api/reports', require('./routes/reports'));
+app.use('/api/export', require('./routes/export'));
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);

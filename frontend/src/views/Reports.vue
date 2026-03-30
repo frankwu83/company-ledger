@@ -194,6 +194,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useReportStore } from '../stores'
+import { exportApi } from '../api'
 import PieChart from '../components/PieChart.vue'
 import BarChart from '../components/BarChart.vue'
 import LineChart from '../components/LineChart.vue'
@@ -273,8 +274,45 @@ const fetchReport = async () => {
   }
 }
 
-const exportReport = () => {
-  ElMessage.info('导出功能开发中...')
+const exportReport = async () => {
+  try {
+    ElMessage.info('正在生成报表...')
+    
+    const year = reportType.value === 'monthly' 
+      ? monthValue.value?.getFullYear() 
+      : yearValue.value?.getFullYear()
+    const month = monthValue.value?.getMonth() + 1
+    
+    let response
+    let filename
+    
+    if (reportType.value === 'monthly') {
+      response = await exportApi.exportMonthly({ year, month })
+      filename = `月度报表_${year}_${month}.xlsx`
+    } else if (reportType.value === 'yearly') {
+      response = await exportApi.exportYearly({ year })
+      filename = `年度报表_${year}.xlsx`
+    } else {
+      ElMessage.warning('季度报表导出请使用月度或年度导出')
+      return
+    }
+    
+    // 创建下载链接
+    const blob = new Blob([response], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(link.href)
+    
+    ElMessage.success('报表导出成功')
+  } catch (error) {
+    ElMessage.error('导出失败: ' + (error.message || '未知错误'))
+  }
 }
 
 const formatMoney = (value) => {
