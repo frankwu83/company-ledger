@@ -11,6 +11,14 @@
   - 本地仓库初始化完成
   - README.md 创建并提交
   - 首次提交: 099fe82
+  - 项目迁移至 /Users/wuxiaojun/Work/openclaw/company-ledger/
+
+- [x] 步骤2: 初始化项目结构（前后端分离）
+  - 根 package.json 配置工作区脚本
+  - 后端: Express + Node.js 基础结构
+  - 前端: Vue 3 + Vite + Element Plus + Pinia
+  - 数据库: Prisma 配置准备
+  - 提交: a1c5cad
 
 ## 待办
 - [ ] 步骤2: 初始化项目结构（前后端分离）
