@@ -14,10 +14,12 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// 路由（后续添加）
-// app.use('/api/income', require('./routes/income'));
-// app.use('/api/expense', require('./routes/expense'));
-// app.use('/api/reports', require('./routes/reports'));
+// 路由
+app.use('/api/income', require('./routes/income'));
+app.use('/api/expense', require('./routes/expense'));
+app.use('/api/categories', require('./routes/category'));
+app.use('/api/accounts', require('./routes/account'));
+app.use('/api/reports', require('./routes/reports'));
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
