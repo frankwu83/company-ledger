@@ -26,6 +26,14 @@
   - 数据库初始化种子脚本
   - 提交: 40f69f3
 
+- [x] 步骤4: 实现后端 API（Node.js）
+  - Income API: CRUD + 余额自动更新
+  - Expense API: CRUD + 余额自动更新
+  - Category API: 分类管理
+  - Account API: 账户管理
+  - Reports API: 月度/季度/年度/仪表盘报表
+  - 提交: 5be1af8
+
 ## 待办
 - [ ] 步骤2: 初始化项目结构（前后端分离）
 - [ ] 步骤3: 配置 Prisma 数据库模型
