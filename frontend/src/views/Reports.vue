@@ -66,11 +66,60 @@
       </el-col>
     </el-row>
 
-    <!-- 分类统计 -->
+    <!-- 图表区域 -->
     <el-row :gutter="20" class="charts-row" v-if="currentReport">
       <el-col :span="12">
         <el-card>
-          <template #header>收入分类</template>
+          <template #header>收入分类占比</template>
+          <PieChart
+            :data="incomeChartData.values"
+            :labels="incomeChartData.labels"
+            :colors="['#67c23a', '#85ce61', '#b3e19d', '#95d475', '#f0f9eb']"
+          />
+        </el-card>
+      </el-col>
+      <el-col :span="12">
+        <el-card>
+          <template #header>支出分类占比</template>
+          <PieChart
+            :data="expenseChartData.values"
+            :labels="expenseChartData.labels"
+            :colors="['#f56c6c', '#f78989', '#fab6b6', '#fcd3d3', '#fef0f0']"
+          />
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!-- 年度趋势图 -->
+    <el-row :gutter="20" class="charts-row" v-if="reportType === 'yearly' && currentReport?.monthlyData">
+      <el-col :span="12">
+        <el-card>
+          <template #header>月度收支对比</template>
+          <BarChart
+            :labels="monthlyLabels"
+            :income-data="monthlyIncomeData"
+            :expense-data="monthlyExpenseData"
+          />
+        </el-card>
+      </el-col>
+      <el-col :span="12">
+        <el-card>
+          <template #header>月度结余趋势</template>
+          <LineChart
+            :labels="monthlyLabels"
+            :data="monthlyBalanceData"
+            label="结余"
+            color="#409eff"
+          />
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!-- 分类统计表格 -->
+    <el-row :gutter="20" class="tables-row" v-if="currentReport">
+      <el-col :span="12">
+        <el-card>
+          <template #header>收入分类明细</template>
           <el-table :data="currentReport.incomeByCategory" style="width: 100%">
             <el-table-column prop="category" label="分类" />
             <el-table-column prop="amount" label="金额" align="right">
@@ -88,7 +137,7 @@
       </el-col>
       <el-col :span="12">
         <el-card>
-          <template #header>支出分类</template>
+          <template #header>支出分类明细</template>
           <el-table :data="currentReport.expenseByCategory" style="width: 100%">
             <el-table-column prop="category" label="分类" />
             <el-table-column prop="amount" label="金额" align="right">
@@ -145,6 +194,9 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useReportStore } from '../stores'
+import PieChart from '../components/PieChart.vue'
+import BarChart from '../components/BarChart.vue'
+import LineChart from '../components/LineChart.vue'
 
 const reportStore = useReportStore()
 
@@ -157,6 +209,43 @@ const currentReport = computed(() => {
   if (reportType.value === 'monthly') return reportStore.monthlyReport
   if (reportType.value === 'yearly') return reportStore.yearlyReport
   return reportStore.monthlyReport
+})
+
+// 图表数据计算
+const incomeChartData = computed(() => {
+  if (!currentReport.value?.incomeByCategory) return { labels: [], values: [] }
+  return {
+    labels: currentReport.value.incomeByCategory.map(item => item.category),
+    values: currentReport.value.incomeByCategory.map(item => item.amount)
+  }
+})
+
+const expenseChartData = computed(() => {
+  if (!currentReport.value?.expenseByCategory) return { labels: [], values: [] }
+  return {
+    labels: currentReport.value.expenseByCategory.map(item => item.category),
+    values: currentReport.value.expenseByCategory.map(item => item.amount)
+  }
+})
+
+const monthlyLabels = computed(() => {
+  if (!currentReport.value?.monthlyData) return []
+  return currentReport.value.monthlyData.map(item => item.month + '月')
+})
+
+const monthlyIncomeData = computed(() => {
+  if (!currentReport.value?.monthlyData) return []
+  return currentReport.value.monthlyData.map(item => item.income)
+})
+
+const monthlyExpenseData = computed(() => {
+  if (!currentReport.value?.monthlyData) return []
+  return currentReport.value.monthlyData.map(item => item.expense)
+})
+
+const monthlyBalanceData = computed(() => {
+  if (!currentReport.value?.monthlyData) return []
+  return currentReport.value.monthlyData.map(item => item.balance)
 })
 
 onMounted(() => {
@@ -178,7 +267,6 @@ const fetchReport = async () => {
       month: monthValue.value?.getMonth() + 1
     })
   } else if (reportType.value === 'quarterly') {
-    // 季度报表使用月度接口聚合
     await reportStore.fetchMonthlyReport({ year })
   } else if (reportType.value === 'yearly') {
     await reportStore.fetchYearlyReport({ year })
@@ -243,6 +331,10 @@ const calculatePercentage = (amount, total) => {
 }
 
 .charts-row {
+  margin-bottom: 20px;
+}
+
+.tables-row {
   margin-bottom: 20px;
 }
 
