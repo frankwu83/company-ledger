@@ -23,6 +23,8 @@
 ### 1. 安装依赖
 
 ```bash
+cd /Users/wuxiaojun/Work/openclaw/company-ledger
+
 # 一键安装（推荐）
 ./install.sh
 
@@ -35,7 +37,7 @@ cd frontend && npm install && cd ..
 ### 2. 初始化数据库
 
 ```bash
-cd backend
+cd /Users/wuxiaojun/Work/openclaw/company-ledger/backend
 npx prisma migrate dev --name init
 node ../database/seed.js
 
@@ -46,6 +48,8 @@ node ../database/generate-test-data.js
 ### 3. 启动开发服务器
 
 ```bash
+cd /Users/wuxiaojun/Work/openclaw/company-ledger
+
 # 同时启动前后端
 npm run dev
 

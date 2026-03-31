@@ -125,6 +125,8 @@ cd /Users/wuxiaojun/Work/openclaw/company-ledger
 ./install.sh
 ```
 
+**项目路径**: `/Users/wuxiaojun/Work/openclaw/company-ledger`
+
 ### 启动
 ```bash
 # 同时启动
@@ -137,7 +139,7 @@ npm run dev:frontend  # http://localhost:5173
 
 ### 生成测试数据
 ```bash
-cd database
+cd /Users/wuxiaojun/Work/openclaw/company-ledger/database
 node generate-test-data.js
 ```
 
