@@ -109,4 +109,10 @@ export const exportApi = {
   exportYearly: (params) => api.get('/export/yearly', { params, responseType: 'blob' })
 }
 
+// 日志 API
+export const logApi = {
+  getLogs: (params) => api.get('/logs', { params }),
+  getStats: (params) => api.get('/logs/stats', { params })
+}
+
 export default api

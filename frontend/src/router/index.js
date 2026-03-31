@@ -47,6 +47,12 @@ const routes = [
         name: 'Profile',
         component: () => import('../views/Profile.vue'),
         meta: { title: '个人设置' }
+      },
+      {
+        path: '/logs',
+        name: 'Logs',
+        component: () => import('../views/Logs.vue'),
+        meta: { title: '操作日志', roles: ['admin'] }
       }
     ]
   }
@@ -63,6 +69,7 @@ router.beforeEach((to, from, next) => {
   document.title = to.meta.title ? `${to.meta.title} - 公司台账` : '公司台账'
   
   const token = localStorage.getItem('token')
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
   
   // 公开页面直接放行
   if (to.meta.public) {
@@ -79,6 +86,14 @@ router.beforeEach((to, from, next) => {
   if (!token) {
     next('/login')
     return
+  }
+  
+  // 检查角色权限
+  if (to.meta.roles && to.meta.roles.length > 0) {
+    if (!to.meta.roles.includes(user.role)) {
+      next('/')
+      return
+    }
   }
   
   next()
