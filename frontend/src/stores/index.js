@@ -1,6 +1,68 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { incomeApi, expenseApi, categoryApi, accountApi, reportApi } from '../api'
+import { authApi, incomeApi, expenseApi, categoryApi, accountApi, reportApi } from '../api'
+
+// 用户认证 Store
+export const useUserStore = defineStore('user', () => {
+  const token = ref(localStorage.getItem('token') || '')
+  const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
+  
+  const isLoggedIn = computed(() => !!token.value)
+  const isAdmin = computed(() => user.value?.role === 'admin')
+
+  const login = async (username, password) => {
+    const res = await authApi.login({ username, password })
+    if (res.token) {
+      token.value = res.token
+      user.value = res.user
+      localStorage.setItem('token', res.token)
+      localStorage.setItem('user', JSON.stringify(res.user))
+    }
+    return res
+  }
+
+  const logout = () => {
+    token.value = ''
+    user.value = null
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+  }
+
+  const fetchUserInfo = async () => {
+    try {
+      const res = await authApi.getMe()
+      user.value = res
+      localStorage.setItem('user', JSON.stringify(res))
+    } catch (error) {
+      logout()
+    }
+  }
+
+  const updateProfile = async (data) => {
+    const res = await authApi.updateMe(data)
+    if (res.id) {
+      user.value = { ...user.value, ...res }
+      localStorage.setItem('user', JSON.stringify(user.value))
+    }
+    return res
+  }
+
+  const changePassword = async (oldPassword, newPassword) => {
+    return await authApi.changePassword({ oldPassword, newPassword })
+  }
+
+  return {
+    token,
+    user,
+    isLoggedIn,
+    isAdmin,
+    login,
+    logout,
+    fetchUserInfo,
+    updateProfile,
+    changePassword
+  }
+})
 
 // 收入 Store
 export const useIncomeStore = defineStore('income', () => {

@@ -48,6 +48,29 @@
     <el-container>
       <el-header class="header">
         <h2>{{ $route.meta?.title || '公司台账系统' }}</h2>
+        <div class="user-menu">
+          <el-dropdown @command="handleCommand">
+            <span class="user-info">
+              <el-avatar :size="32" class="avatar">
+                {{ userStore.user?.name?.charAt(0) || 'U' }}
+              </el-avatar>
+              <span class="username">{{ userStore.user?.name || userStore.user?.username }}</span>
+              <el-icon><ArrowDown /></el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="profile">
+                  <el-icon><User /></el-icon>
+                  个人设置
+                </el-dropdown-item>
+                <el-dropdown-item divided command="logout">
+                  <el-icon><SwitchButton /></el-icon>
+                  退出登录
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
       </el-header>
       <el-main class="main">
         <router-view />
@@ -57,6 +80,28 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+import { ElMessageBox } from 'element-plus'
+import { ArrowDown, User, SwitchButton } from '@element-plus/icons-vue'
+import { useUserStore } from '../stores'
+
+const router = useRouter()
+const userStore = useUserStore()
+
+const handleCommand = (command) => {
+  if (command === 'profile') {
+    router.push('/profile')
+  } else if (command === 'logout') {
+    ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      userStore.logout()
+      router.push('/login')
+    }).catch(() => {})
+  }
+}
 </script>
 
 <style scoped>
@@ -92,11 +137,32 @@
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .header h2 {
   margin: 0;
   font-size: 20px;
+  color: #303133;
+}
+
+.user-menu {
+  margin-right: 20px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.avatar {
+  background-color: #409EFF;
+  color: #fff;
+}
+
+.username {
+  margin: 0 8px;
   color: #303133;
 }
 

@@ -11,6 +11,11 @@ const api = axios.create({
 // 请求拦截器
 api.interceptors.request.use(
   (config) => {
+    // 添加 token
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
     console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, config)
     return config
   },
@@ -28,9 +33,30 @@ api.interceptors.response.use(
   },
   (error) => {
     console.error('[API Response Error]', error.response?.data || error.message)
+    // 401 未登录或 token 过期
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      // 跳转到登录页
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
+    }
     return Promise.reject(error)
   }
 )
+
+// 认证 API
+export const authApi = {
+  login: (data) => api.post('/auth/login', data),
+  getMe: () => api.get('/auth/me'),
+  updateMe: (data) => api.put('/auth/me', data),
+  changePassword: (data) => api.put('/auth/password', data),
+  // 管理员接口
+  createUser: (data) => api.post('/auth/users', data),
+  getUsers: () => api.get('/auth/users'),
+  toggleUser: (id) => api.put(`/auth/users/${id}/toggle`)
+}
 
 // 收入 API
 export const incomeApi = {

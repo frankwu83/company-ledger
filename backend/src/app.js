@@ -15,6 +15,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // 路由
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/income', require('./routes/income'));
 app.use('/api/expense', require('./routes/expense'));
 app.use('/api/categories', require('./routes/category'));
