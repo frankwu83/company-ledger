@@ -16,6 +16,10 @@ function auth(req, res, next) {
   }
 
   req.user = decoded;
+  // 同时提供 id 字段（兼容代码中使用 id 的地方）
+  if (!req.user.id) {
+    req.user.id = decoded.userId;
+  }
   next();
 }
 
