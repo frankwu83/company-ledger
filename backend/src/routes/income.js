@@ -1,9 +1,12 @@
 const express = require('express');
 const prisma = require('../prisma');
 const router = express.Router();
+const { auth } = require('../middleware/auth');
+const { logOperation } = require('../middleware/logger');
+const operationLogService = require('../services/operationLog');
 
 // 获取所有收入记录
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const { startDate, endDate, categoryId, accountId } = req.query;
     
@@ -33,7 +36,7 @@ router.get('/', async (req, res) => {
 });
 
 // 获取单个收入记录
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
   try {
     const income = await prisma.income.findUnique({
       where: { id: parseInt(req.params.id) },
@@ -53,8 +56,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// 创建收入记录
-router.post('/', async (req, res) => {
+// 创建收入记录 - 使用日志中间件
+router.post('/', auth, logOperation('CREATE', 'income'), async (req, res) => {
   try {
     const { date, amount, categoryId, accountId, description } = req.body;
     
@@ -89,7 +92,7 @@ router.post('/', async (req, res) => {
 });
 
 // 更新收入记录
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
   try {
     const { date, amount, categoryId, accountId, description } = req.body;
     const id = parseInt(req.params.id);
@@ -132,6 +135,21 @@ router.put('/:id', async (req, res) => {
       });
     }
 
+    // 记录更新日志
+    if (req.user) {
+      await operationLogService.createLog({
+        userId: req.user.id,
+        username: req.user.username,
+        action: 'UPDATE',
+        resource: 'income',
+        resourceId: id,
+        oldValue: oldIncome,
+        newValue: income,
+        description: `更新收入记录 #${id}`,
+        ip: req.ip || req.connection?.remoteAddress
+      });
+    }
+
     res.json({ success: true, data: income });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -139,7 +157,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // 删除收入记录
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     
@@ -164,6 +182,20 @@ router.delete('/:id', async (req, res) => {
     await prisma.income.delete({
       where: { id }
     });
+
+    // 记录删除日志
+    if (req.user) {
+      await operationLogService.createLog({
+        userId: req.user.id,
+        username: req.user.username,
+        action: 'DELETE',
+        resource: 'income',
+        resourceId: id,
+        oldValue: income,
+        description: `删除收入记录 #${id}`,
+        ip: req.ip || req.connection?.remoteAddress
+      });
+    }
 
     res.json({ success: true, message: '删除成功' });
   } catch (error) {

@@ -42,6 +42,11 @@
           <el-icon><Setting /></el-icon>
           <span>设置</span>
         </el-menu-item>
+
+        <el-menu-item v-if="isAdmin" index="/logs">
+          <el-icon><Document /></el-icon>
+          <span>操作日志</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     
@@ -80,13 +85,16 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
-import { ArrowDown, User, SwitchButton } from '@element-plus/icons-vue'
+import { ArrowDown, User, SwitchButton, Document } from '@element-plus/icons-vue'
 import { useUserStore } from '../stores'
 
 const router = useRouter()
 const userStore = useUserStore()
+
+const isAdmin = computed(() => userStore.user?.role === 'admin')
 
 const handleCommand = (command) => {
   if (command === 'profile') {

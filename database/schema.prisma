@@ -84,3 +84,23 @@ model Expense {
   @@index([date])
   @@index([categoryId])
 }
+
+// 操作日志表
+model OperationLog {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  username    String    // 冗余存储，防止用户删除后无法追溯
+  action      String    // "CREATE" | "UPDATE" | "DELETE" | "LOGIN" | "LOGOUT"
+  resource    String    // "income" | "expense" | "user" | "category" | "account"
+  resourceId  Int?      @map("resource_id") // 操作对象的ID
+  oldValue    String?   @map("old_value")  // 修改前的数据(JSON)
+  newValue    String?   @map("new_value")  // 修改后的数据(JSON)
+  description String?   // 操作描述
+  ip          String?   // IP地址
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("operation_logs")
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}

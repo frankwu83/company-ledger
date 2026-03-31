@@ -1,9 +1,11 @@
 const express = require('express');
 const prisma = require('../prisma');
 const router = express.Router();
+const { auth } = require('../middleware/auth');
+const operationLogService = require('../services/operationLog');
 
 // 获取所有支出记录
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const { startDate, endDate, categoryId, accountId } = req.query;
     
@@ -33,7 +35,7 @@ router.get('/', async (req, res) => {
 });
 
 // 获取单个支出记录
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
   try {
     const expense = await prisma.expense.findUnique({
       where: { id: parseInt(req.params.id) },
@@ -54,7 +56,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // 创建支出记录
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
     const { date, amount, categoryId, accountId, description } = req.body;
     
@@ -82,6 +84,18 @@ router.post('/', async (req, res) => {
       }
     });
 
+    // 记录创建日志
+    await operationLogService.createLog({
+      userId: req.user.id,
+      username: req.user.username,
+      action: 'CREATE',
+      resource: 'expense',
+      resourceId: expense.id,
+      newValue: expense,
+      description: `创建支出记录 #${expense.id}`,
+      ip: req.ip || req.connection?.remoteAddress
+    });
+
     res.status(201).json({ success: true, data: expense });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -89,7 +103,7 @@ router.post('/', async (req, res) => {
 });
 
 // 更新支出记录
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
   try {
     const { date, amount, categoryId, accountId, description } = req.body;
     const id = parseInt(req.params.id);
@@ -132,6 +146,19 @@ router.put('/:id', async (req, res) => {
       });
     }
 
+    // 记录更新日志
+    await operationLogService.createLog({
+      userId: req.user.id,
+      username: req.user.username,
+      action: 'UPDATE',
+      resource: 'expense',
+      resourceId: id,
+      oldValue: oldExpense,
+      newValue: expense,
+      description: `更新支出记录 #${id}`,
+      ip: req.ip || req.connection?.remoteAddress
+    });
+
     res.json({ success: true, data: expense });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -139,7 +166,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // 删除支出记录
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     
@@ -163,6 +190,18 @@ router.delete('/:id', async (req, res) => {
 
     await prisma.expense.delete({
       where: { id }
+    });
+
+    // 记录删除日志
+    await operationLogService.createLog({
+      userId: req.user.id,
+      username: req.user.username,
+      action: 'DELETE',
+      resource: 'expense',
+      resourceId: id,
+      oldValue: expense,
+      description: `删除支出记录 #${id}`,
+      ip: req.ip || req.connection?.remoteAddress
     });
 
     res.json({ success: true, message: '删除成功' });
